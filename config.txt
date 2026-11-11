@@ -7,3 +7,5 @@ local_ttl=60
 ad_list_file=ad_list.txt
 sanction_list_file=sanction_list.txt
 cache_enabled=true
+log_enabled=true
+log_file=log.txt
