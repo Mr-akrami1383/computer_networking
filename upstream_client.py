@@ -1,4 +1,6 @@
+
 import socket
+import ipaddress
 
 
 def query_upstream(domain, config):
@@ -15,7 +17,16 @@ def query_upstream(domain, config):
         parts = response.split(",")
 
         if len(parts) == 3 and parts[0] == "OK":
-            return "OK", parts[1], int(parts[2])
+            try:
+                ip = str(ipaddress.IPv4Address(parts[1]))
+                ttl = int(parts[2])
+            except ValueError:
+                return "SERVER_ERROR", "-", "-"
+
+            if ttl < 0:
+                return "SERVER_ERROR", "-", "-"
+
+            return "OK", ip, ttl
 
         if len(parts) == 2 and parts[0] == "ERROR":
             if parts[1] == "DOMAIN_NOT_FOUND":
@@ -23,5 +34,5 @@ def query_upstream(domain, config):
 
         return "SERVER_ERROR", "-", "-"
 
-    except (socket.timeout, OSError, ValueError):
+    except (socket.timeout, OSError, UnicodeDecodeError):
         return "SERVER_ERROR", "-", "-"
