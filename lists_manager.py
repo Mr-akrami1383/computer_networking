@@ -1,6 +1,7 @@
 from pathlib import Path
 from domain_handler import normalize_domain
 
+
 def load_domain_list(filename):
     domains = set()
     file_path = Path(filename)
@@ -19,6 +20,7 @@ def load_domain_list(filename):
                 print(f"Warning: bad line in {filename}: {line_number}")
 
     return domains
+
 
 def load_lists(config):
     ad_domains = load_domain_list(config["ad_list_file"])

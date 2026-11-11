@@ -1,8 +1,10 @@
-
 import re
 
 
 def normalize_domain(domain):
+    if not isinstance(domain, str):
+        raise ValueError("Invalid domain")
+
     domain = domain.strip().lower()
 
     if domain.endswith("."):
@@ -11,11 +13,20 @@ def normalize_domain(domain):
     if not domain:
         raise ValueError("Invalid domain")
 
-    if not re.fullmatch(r"[a-z0-9.-]+", domain):
+    if len(domain) > 253:
         raise ValueError("Invalid domain")
 
-    if ".." in domain:
-        raise ValueError("Invalid domain")
+    labels = domain.split(".")
+
+    for label in labels:
+        if not label or len(label) > 63:
+            raise ValueError("Invalid domain")
+
+        if not re.fullmatch(r"[a-z0-9-]+", label):
+            raise ValueError("Invalid domain")
+
+        if label.startswith("-") or label.endswith("-"):
+            raise ValueError("Invalid domain")
 
     return domain
 
@@ -34,4 +45,3 @@ def classify_domain(domain, ad_domains, sanction_domains):
             return "SANCTION"
 
     return "UPSTREAM"
-
