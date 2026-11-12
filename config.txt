@@ -9,3 +9,5 @@ sanction_list_file=sanction_list.txt
 cache_enabled=true
 log_enabled=true
 log_file=log.txt
+real_dns_enabled=false
+dns_server_ip=8.8.8.8
