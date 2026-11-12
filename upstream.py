@@ -1,63 +1,33 @@
-"""Local UDP upstream simulator for the DNS Proxy assignment.
-
-Run with: python upstream.py
-No third-party dependencies are required.
-"""
 
 import socket
 
 HOST = "127.0.0.1"
 PORT = 5354
-BUFFER_SIZE = 65535
 
+request_count = 0
 
-def make_reply(domain: str) -> str:
+server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+server.bind((HOST, PORT))
+
+print(f"Upstream server is running on {HOST}:{PORT}")
+
+while True:
+    data, client_address = server.recvfrom(1024)
+    domain = data.decode("utf-8").strip().lower()
+    request_count += 1
+
+    # Check domain
     if domain == "missing.example.net":
-        return "NOT_FOUND"
-    return "OK 198.51.100.7 5"
 
+        response = "ERROR,DOMAIN_NOT_FOUND"
+        print(f"Request #{request_count}: {domain} -> NOT_FOUND")
 
-def main() -> None:
-    request_count = 0
+    else:
 
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
-        try:
-            server.bind((HOST, PORT))
-        except OSError as exc:
-            print(f"Upstream error: cannot bind to {HOST}:{PORT}: {exc}")
-            return
+        ip = "198.51.100.7"
+        ttl = 5
 
-        try:
-            while True:
-                data, client_address = server.recvfrom(BUFFER_SIZE)
-                request_count += 1
-
-                try:
-                    message = data.decode("utf-8").strip()
-                    parts = message.split()
-                    if len(parts) != 2 or parts[0] != "QUERY":
-                        raise ValueError("Expected QUERY <domain>")
-                    domain = parts[1]
-                    reply = make_reply(domain)
-                except (UnicodeDecodeError, ValueError):
-                    domain = "(invalid request)"
-                    reply = "ERROR"
-
-                print(
-                    f"Request #{request_count}: {domain} -> {reply}",
-                    flush=True,
-                )
-
-                try:
-                    server.sendto(reply.encode("utf-8"), client_address)
-                except OSError as exc:
-                    print(f"Upstream error: cannot send reply: {exc}")
-        except KeyboardInterrupt:
-            pass
-        except OSError as exc:
-            print(f"Upstream error: {exc}")
-
-
-if __name__ == "__main__":
-    main()
-
+        response = f"OK,{ip},{ttl}"
+        print(f"Request #{request_count}: {domain} -> OK {ip} {ttl}")
+    server.sendto(response.encode("utf-8"), client_address)
