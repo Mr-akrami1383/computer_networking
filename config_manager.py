@@ -21,9 +21,13 @@ def load_config(filename="config.txt"):
             key, value = line.split("=", 1)
             config[key.strip()] = value.strip()
 
-    # Optional logging settings
+
     config.setdefault("log_enabled", "false")
     config.setdefault("log_file", "log.txt")
+
+
+    config.setdefault("real_dns_enabled", "false")
+    config.setdefault("dns_server_ip", "8.8.8.8")
 
     required_keys = [
         "upstream_ip",
@@ -47,6 +51,7 @@ def load_config(filename="config.txt"):
             config["upstream_timeout_sec"]
         )
         config["local_ttl"] = int(config["local_ttl"])
+
     except ValueError:
         raise ValueError("Invalid numeric value in config.txt")
 
@@ -58,14 +63,26 @@ def load_config(filename="config.txt"):
 
     if config["local_ttl"] < 0:
         raise ValueError("Invalid local_ttl")
+    ip_keys = [
+        "upstream_ip",
+        "sinkhole_ip",
+        "proxy_ip",
+        "dns_server_ip",
+    ]
 
-    for key in ["upstream_ip", "sinkhole_ip", "proxy_ip"]:
+    for key in ip_keys:
         try:
             ipaddress.IPv4Address(config[key])
+
         except ipaddress.AddressValueError:
             raise ValueError(f"Invalid IPv4 address: {key}")
+    boolean_keys = [
+        "cache_enabled",
+        "log_enabled",
+        "real_dns_enabled",
+    ]
 
-    for key in ["cache_enabled", "log_enabled"]:
+    for key in boolean_keys:
         value = config[key].lower()
 
         if value not in ("true", "false"):
