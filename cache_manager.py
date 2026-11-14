@@ -17,4 +17,7 @@ class CacheManager:
             "UPSTREAM": 0,
             "ERRORS": 0
         }
-
+    def _get_remaining_ttl(self, entry: dict) -> int:
+        elapsed = int(time.time() - entry["timestamp"])
+        remaining = entry["ttl"] - elapsed
+        return remaining
