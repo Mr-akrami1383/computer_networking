@@ -44,6 +44,11 @@ class CacheManager:
         if domain in self.cache:
             del self.cache[domain]
 
+            if self.max_entries is not None and self.max_entries > 0:
+                self._purge_expired()
+                while len(self.cache) >= self.max_entries:
+                    self.cache.popitem(last=False)
+
         self.cache[domain] = {
             "ip": ip,
             "ttl": ttl,
