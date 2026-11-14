@@ -35,3 +35,17 @@ class CacheManager:
             return entry["ip"], remaining_ttl
         del self.cache[domain]
         return None
+
+    def put(self, domain: str, ip: str, ttl: int):
+        if not self.cache_enabled:
+            return
+        if ttl <= 0:
+            return
+        if domain in self.cache:
+            del self.cache[domain]
+
+        self.cache[domain] = {
+            "ip": ip,
+            "ttl": ttl,
+            "timestamp": time.time()
+        }
