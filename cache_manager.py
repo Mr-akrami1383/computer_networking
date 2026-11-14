@@ -28,10 +28,10 @@ class CacheManager:
 
         if domain not in self.cache:
             return None
+
         entry = self.cache[domain]
         remaining_ttl = self._get_remaining_ttl(entry)
         if remaining_ttl >= 1:
             return entry["ip"], remaining_ttl
-        else:
-            del self.cache[domain]
-            return None
+        del self.cache[domain]
+        return None
