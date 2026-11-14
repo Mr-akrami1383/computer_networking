@@ -79,3 +79,25 @@ class CacheManager:
                     lines.append(f"{domain} | {entry['ip']} | {rem_ttl}")
 
             return "\n".join(lines) if lines else "Cache is empty."
+
+        def record_decision(self, source: str, status: str):
+            self.stats["TOTAL"] += 1
+
+            if status in ("INVALID_INPUT", "SERVER_ERROR"):
+                self.stats["ERRORS"] += 1
+            elif source == "AD_BLOCK":
+                self.stats["AD_BLOCK"] += 1
+            elif source == "SANCTION":
+                self.stats["SANCTION"] += 1
+            elif source == "CACHE":
+                self.stats["CACHE"] += 1
+            elif source == "UPSTREAM":
+                self.stats["UPSTREAM"] += 1
+
+        def format_stats(self) -> str:
+            s = self.stats
+            return (
+                f"Total: {s['TOTAL']} | AD_BLOCK: {s['AD_BLOCK']} | "
+                f"SANCTION: {s['SANCTION']} | CACHE: {s['CACHE']} | "
+                f"UPSTREAM: {s['UPSTREAM']} | ERRORS: {s['ERRORS']}"
+            )
