@@ -63,7 +63,7 @@ class CacheManager:
             "timestamp": time.time()
         }
 
-        def format_cache_contents(self) -> str:
+    def format_cache_contents(self) -> str:
             if not self.cache_enabled:
                 return "Cache is empty."
 
@@ -80,7 +80,7 @@ class CacheManager:
 
             return "\n".join(lines) if lines else "Cache is empty."
 
-        def record_decision(self, source: str, status: str):
+    def record_decision(self, source: str, status: str):
             self.stats["TOTAL"] += 1
 
             if status in ("INVALID_INPUT", "SERVER_ERROR"):
@@ -94,10 +94,10 @@ class CacheManager:
             elif source == "UPSTREAM":
                 self.stats["UPSTREAM"] += 1
 
-        def format_stats(self) -> str:
+    def format_stats(self) -> str:
             s = self.stats
             return (
-                f"Total: {s['TOTAL']} | AD_BLOCK: {s['AD_BLOCK']} | "
-                f"SANCTION: {s['SANCTION']} | CACHE: {s['CACHE']} | "
-                f"UPSTREAM: {s['UPSTREAM']} | ERRORS: {s['ERRORS']}"
+                f"Total: {s['TOTAL']} | AD_BLOCK: {s['AD_BLOCK']} |"
+                f" SANCTION: {s['SANCTION']} | CACHE: {s['CACHE']} |"
+                f" UPSTREAM: {s['UPSTREAM']} | ERRORS: {s['ERRORS']}"
             )

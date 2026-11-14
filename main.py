@@ -21,7 +21,10 @@ def main():
         config = load_config()
         ad_domains, sanction_domains = load_lists(config)
 
-        cache_enabled = config.get("cache_enabled", "true").lower() == "true"
+        raw_cache = config.get("cache_enabled", True)
+        cache_enabled = (
+            str(raw_cache).lower() == "true" if not isinstance(raw_cache, bool) else raw_cache
+        )
         max_entries_raw = config.get("cache_max_entries")
         max_entries = int(max_entries_raw) if max_entries_raw is not None else None
 
