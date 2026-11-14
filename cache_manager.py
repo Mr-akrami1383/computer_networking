@@ -22,6 +22,14 @@ class CacheManager:
         remaining = entry["ttl"] - elapsed
         return remaining
 
+    def _purge_expired(self):
+        expired_domains = [
+            domain for domain, entry in self.cache.items()
+            if self._get_remaining_ttl(entry) < 1
+        ]
+        for domain in expired_domains:
+            del self.cache[domain]
+
     def get(self, domain: str):
         if not self.cache_enabled:
             return None
@@ -54,3 +62,4 @@ class CacheManager:
             "ttl": ttl,
             "timestamp": time.time()
         }
+
