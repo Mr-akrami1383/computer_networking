@@ -63,3 +63,19 @@ class CacheManager:
             "timestamp": time.time()
         }
 
+        def format_cache_contents(self) -> str:
+            if not self.cache_enabled:
+                return "Cache is empty."
+
+            self._purge_expired()
+
+            if not self.cache:
+                return "Cache is empty."
+
+            lines = []
+            for domain, entry in self.cache.items():
+                rem_ttl = self._get_remaining_ttl(entry)
+                if rem_ttl >= 1:
+                    lines.append(f"{domain} | {entry['ip']} | {rem_ttl}")
+
+            return "\n".join(lines) if lines else "Cache is empty."
