@@ -2,3 +2,4 @@
 ads.example.com
 doubleclick.net
 advertising.example.org
+both.example.com
