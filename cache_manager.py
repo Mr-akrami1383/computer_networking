@@ -45,17 +45,20 @@ class CacheManager:
         return None
 
     def put(self, domain: str, ip: str, ttl: int):
-        if not self.cache_enabled:
+        if not self.cache_enabled or ttl <= 0:
             return
-        if ttl <= 0:
-            return
+
+        if self.max_entries is not None and self.max_entries <= 0:
+            raise ValueError("max_entries must be positive")
+
+        self._purge_expired()
+
         if domain in self.cache:
             del self.cache[domain]
 
-            if self.max_entries is not None and self.max_entries > 0:
-                self._purge_expired()
-                while len(self.cache) >= self.max_entries:
-                    self.cache.popitem(last=False)
+        if self.max_entries is not None:
+            while len(self.cache) >= self.max_entries:
+                self.cache.popitem(last=False)
 
         self.cache[domain] = {
             "ip": ip,
