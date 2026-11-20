@@ -11,3 +11,4 @@ log_enabled=true
 log_file=log.txt
 real_dns_enabled=false
 dns_server_ip=8.8.8.8
+cache_max_entries=2
