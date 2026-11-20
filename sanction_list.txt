@@ -1,4 +1,4 @@
 # Sanctioned domains
 blocked.example.net
 restricted.example.org
-service.example.org
+service.example.orgno
